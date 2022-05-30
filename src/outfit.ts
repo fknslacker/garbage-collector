@@ -7,6 +7,7 @@ import {
   haveEquipped,
   inebrietyLimit,
   Item,
+  myBasestat,
   myClass,
   myFamiliar,
   myInebriety,
@@ -26,6 +27,7 @@ import {
   $monster,
   $skill,
   $slot,
+  $stat,
   CombatLoversLocket,
   get,
   getKramcoWandererChance,
@@ -154,6 +156,7 @@ export function meatOutfit(embezzlerUp: boolean, requirement?: Requirement, sea?
   const preventSlot = requirement?.maximizeOptions.preventSlot ?? [];
 
   if (myInebriety() > inebrietyLimit()) {
+    visitUrl("inv_equip.php?action=unequip&type=fakehand");
     forceEquip.push($item`Drunkula's wineglass`);
   } else if (!embezzlerUp) {
     if (
@@ -167,7 +170,10 @@ export function meatOutfit(embezzlerUp: boolean, requirement?: Requirement, sea?
     if (have($item`mafia pointer finger ring`)) {
       if (myClass() === $class`Seal Clubber` && have($skill`Furious Wallop`)) {
         forceEquip.push($item`mafia pointer finger ring`);
-      } else if (have($item`Operation Patriot Shield`) && myClass() === $class`Turtle Tamer`) {
+      } else if ( ( ( ( 2.0 * myBasestat($stat`muscle`) ) + numericModifier('Weapon Damage') ) < 0 ) ) {
+        forceEquip.push($item`mafia pointer finger ring`);
+        preventEquip.push($item`Fourth of May Cosplay Saber`)
+      }  else if (have($item`Operation Patriot Shield`) && myClass() === $class`Turtle Tamer`) {
         forceEquip.push(...$items`Operation Patriot Shield, mafia pointer finger ring`);
       } else if (have($item`haiku katana`)) {
         forceEquip.push(...$items`haiku katana, mafia pointer finger ring`);

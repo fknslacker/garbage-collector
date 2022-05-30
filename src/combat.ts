@@ -15,6 +15,7 @@ import {
   itemType,
   mpCost,
   myAdventures,
+  myBasestat,
   myBjornedFamiliar,
   myClass,
   myEnthronedFamiliar,
@@ -43,6 +44,7 @@ import {
   $monsters,
   $skill,
   $slot,
+  $stat,
   $thralls,
   get,
   getTodaysHolidayWanderers,
@@ -234,6 +236,9 @@ export class Macro extends StrictMacro {
       equippedAmount($item`mafia pointer finger ring`) > 0 &&
       myClass() === $class`Seal Clubber` &&
       have($skill`Furious Wallop`);
+    const fakeHandSetup =
+      ( ( ( 2.0 * myBasestat($stat`muscle`) ) + numericModifier('Weapon Damage') ) < 0 ) &&
+      equippedAmount($item`mafia pointer finger ring`) > 0;
     const opsSetup =
       equippedAmount($item`mafia pointer finger ring`) > 0 &&
       equippedAmount($item`Operation Patriot Shield`) > 0;
@@ -295,6 +300,7 @@ export class Macro extends StrictMacro {
         )
       )
       .externalIf(opsSetup, Macro.trySkill($skill`Throw Shield`))
+      .externalIf(fakeHandSetup, Macro.while_(`!didcritical 1 && !pastround 22`, Macro.attack()))
       .meatStasis(willCrit)
       .externalIf(
         hippyStoneBroken() && monsterManuelAvailable(),
