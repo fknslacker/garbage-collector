@@ -1,10 +1,12 @@
 import {
+  equip,
   fullnessLimit,
   getWorkshed,
   haveEffect,
   Item,
   itemAmount,
   mallPrice,
+  myBasestat,
   myClass,
   myFullness,
   numericModifier,
@@ -20,6 +22,7 @@ import {
   $location,
   $skill,
   $slot,
+  $stat,
   clamp,
   DaylightShavings,
   findFairyMultiplier,
@@ -385,14 +388,19 @@ export function usingThumbRing(): boolean {
       accessoryValues.set(accessory, value + (accessoryValues.get(accessory) ?? 0));
     }
 
-    if (
-      have($item`mafia pointer finger ring`) &&
-      ((myClass() === $class`Seal Clubber` && have($skill`Furious Wallop`)) ||
-        have($item`haiku katana`) ||
+    if ( have($item`mafia pointer finger ring`) ) {
+      if (myClass() === $class`Seal Clubber` && have($skill`Furious Wallop`)) {
+        accessoryValues.set($item`mafia pointer finger ring`, 500);
+      } else if( ( ( 2.0 * myBasestat($stat`muscle`) ) + ( numericModifier('Weapon Damage') - itemAmount($item`fake hand`) ) ) < 0 ) {
+        for( let i = itemAmount($item`fake hand`); i > 0; i--) {
+          equip($item`fake hand`);
+        }
+        accessoryValues.set($item`mafia pointer finger ring`, 500);
+      } else if( have($item`haiku katana`) ||
         have($item`Operation Patriot Shield`) ||
-        have($item`unwrapped knock-off retro superhero cape`))
-    ) {
-      accessoryValues.set($item`mafia pointer finger ring`, 500);
+        have($item`unwrapped knock-off retro superhero cape`) ) {
+        accessoryValues.set($item`mafia pointer finger ring`, 500);
+      }
     }
     const bestAccessories = Array.from(accessoryValues.entries())
       .sort(([, aBonus], [, bBonus]) => bBonus - aBonus)
